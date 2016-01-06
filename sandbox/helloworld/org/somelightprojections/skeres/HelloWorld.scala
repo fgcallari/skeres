@@ -40,6 +40,8 @@ object HelloWorld {
     x.set(0, initialX)
 
     val problemOptions = new Problem.Options
+    // Can't let native ceres code take ownership (and try to delete) Scala
+    // objects.
     problemOptions.setCostFunctionOwnership(Ownership.DO_NOT_TAKE_OWNERSHIP)
     problemOptions.setLossFunctionOwnership(Ownership.DO_NOT_TAKE_OWNERSHIP)
 
