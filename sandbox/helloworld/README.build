@@ -7,8 +7,8 @@ To compile and run this demo:
                              /jni/swig/helloworld/
                              /<other sources>
 
-2. Ensure that a build of ceres-solver. Specify its path in the 
-   CERES_BIN variable in mkceres.sh.
+2. Ensure that a build of ceres-solver exists with BUILD_SHARED_LIBS=ON. 
+   Specify the build path in the CERES_BIN variable in mkceres.sh.
 
 3. Edit the HOMEBREW_TOP variable in mkceres.sh with the location
    of your homebrew installation.
