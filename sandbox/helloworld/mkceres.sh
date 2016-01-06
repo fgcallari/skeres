@@ -9,6 +9,8 @@
 #   MacOSX 10.10.5
 #   swig: SWIG Version 3.0.7
 #   c++: Apple LLVM version 7.0.2 (clang-700.1.81)
+#   glog: 0.3.4, from Homebrew
+#   gflags: 2.1.2, from Homebrew.
 #   javac: 1.7.0_71
 #   scalac: Scala compiler version 2.10.4
 #   scala:  Scala code runner version 2.10.4
