@@ -12,6 +12,8 @@
 #   javac: 1.7.0_71
 #   scalac: Scala compiler version 2.10.4
 #   scala:  Scala code runner version 2.10.4
+#   glog: glog version 0.3.4 from Homebrew.
+#   gflags: gflags 2.1.2 from Homebrew.
 #
 set -eux
 
