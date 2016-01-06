@@ -1,0 +1,14 @@
+To compile and run this demo:
+
+1. Copy the entire content of this directory (skeres/sandbox/helloword) 
+   inside "jni/swig" subdirectory of the ceres-solver source tree.
+2. Ensure that a build of ceres-solver exists in a "ceres-bin" directory
+   alongside the sources. That is, your source and binary trees should
+   look like thus:
+       /foo/blah/ceres-solver
+                             /jni/swig/helloworld/
+                             /<other sources>
+       /foo/blah/ceres-bin/
+       
+3. Run mkceres.sh . See comments therein for troubleshooting.
+                           
