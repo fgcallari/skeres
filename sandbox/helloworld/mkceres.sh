@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Build script for the HelloWorld ceres wrap demo. 
+# Build script for the HelloWorld ceres wrap demo.
 # Tested on:
 #   ceres-solver source at commit point:
 #      commit 8ecfb2d7058583510778dc93cdc643e7933f7f62
@@ -21,10 +21,11 @@ CERES_BIN="$HOME/src/ceres-bin"
 HOMEBREW_TOP="/opt/twitter/Cellar/"
 GLOG_VERSION="0.3.4"
 GFLAGS_VERSION="2.1.2"
+EIGEN_VERSION="3.2.2"
 
-mkdir -p ceres classes
+mkdir -p com/google/ceres classes
 
-swig -O -c++ -java -package ceres -outdir ceres \
+swig -O -c++ -java -package com.google.ceres -outdir com/google/ceres \
 -I"${CERES_BIN}/config" \
 -I"../../include" \
 -I"${CERES_BIN}/config" \
@@ -38,6 +39,7 @@ c++ -c -fPIC -O3 -o ceres_wrap.cxx.o ceres_wrap.cxx \
 -I"../../include" \
 -I"${HOMEBREW_TOP}/glog/${GLOG_VERSION}/include" \
 -I"${HOMEBREW_TOP}/gflags/${GFLAGS_VERSION}/include" \
+-I"${HOMEBREW_TOP}/eigen/${EIGEN_VERSION}/include/eigen3" \
 -I"${CERES_BIN}/config"
 
 c++ -O3 -dynamiclib -o libskeres.dylib ceres_wrap.cxx.o \
@@ -45,7 +47,8 @@ c++ -O3 -dynamiclib -o libskeres.dylib ceres_wrap.cxx.o \
 -L"${HOMEBREW_TOP}/gflags/${GFLAGS_VERSION}/lib" -lgflags \
 -L"${CERES_BIN}/lib" -lceres
 
-javac -classpath classes -d classes ceres/*.java
+javac -classpath classes -d classes com/google/ceres/*.java
+
 scalac -classpath classes -d classes \
 org/somelightprojections/skeres/skeres.scala \
 org/somelightprojections/skeres/HelloWorld.scala
