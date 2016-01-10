@@ -1,7 +1,7 @@
 To compile and run this demo:
 
 1. Copy the entire content of this directory (skeres/sandbox/helloword) 
-   inside "jni/swig" subdirectory of the ceres-solver source tree.
+   inside a "jni/swig" subdirectory of the ceres-solver source tree.
    Your source trees should look like:
        /foo/blah/ceres-solver
                              /jni/swig/helloworld/
