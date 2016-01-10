@@ -1,5 +1,4 @@
-// Minimal SWIG configuration file for the
-// ceres-solver HelloWorld demo
+// SWIG configuration file for ceres-solver
 //
 
 // Use directors so we can extend ceres classes,
@@ -92,7 +91,6 @@ void initGoogleLogging(const char* name) {
 }
 %}
 
-%newobject PredefinedLossFunctions::trivial;
 %include "ceres/internal/scoped_ptr.h"
 %include "ceres/types.h"
 %include "ceres/loss_function.h"
@@ -106,6 +104,14 @@ void initGoogleLogging(const char* name) {
 %include "ceres/version.h"
 
 // Convenient creation of the ceres-predefined loss functions.
+%newobject PredefinedLossFunctions::trivialLoss;
+%newobject PredefinedLossFunctions::huberLoss;
+%newobject PredefinedLossFunctions::softLOneLoss;
+%newobject PredefinedLossFunctions::cauchyLoss;
+%newobject PredefinedLossFunctions::tukeyLoss;
+%newobject PredefinedLossFunctions::tolerantLoss;
+%newobject PredefinedLossFunctions::composedLoss;
+%newobject PredefinedLossFunctions::scaledLoss;
 %inline %{
 struct PredefinedLossFunctions {
   static ceres::LossFunction* trivialLoss() { return new ceres::TrivialLoss; }
