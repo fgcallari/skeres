@@ -15,7 +15,7 @@ class CostFunctor extends CostFunction {
   ): Boolean = {
     val x = parameters.get(0, 0)
     residuals.set(0, 10.0 - x)
-    if (!BlockMatrix.isNull(jacobians)) {
+    if (!jacobians.isNull) {
       jacobians.set(0, 0, -1.0)
     }
     true
