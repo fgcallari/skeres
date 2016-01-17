@@ -44,13 +44,13 @@ case class RichDoubleArray(a: DoubleArray) {
 // Convenient access to matrices represented as
 // double**'s.
 case class BlockMatrix(data: DoublePointerPointer) {
+  def isNull: Boolean = BlockMatrixHelper.isNull(data)
+
   def doubleArrayRow(i: Int) = DoubleArray.frompointer {
      BlockMatrixHelper.row(data, i)
   }
+
   def get(i: Int, j: Int) = doubleArrayRow(i).getitem(j)
+
   def set(i: Int, j: Int, x: Double) = doubleArrayRow(i).setitem(j, x)
-}
-object BlockMatrix {
-  @inline def isNull(data: DoublePointerPointer) =
-    BlockMatrixHelper.isNull(data)
 }
