@@ -71,7 +71,7 @@ namespace std {
 %include "carrays.i"
 %array_class(double, DoubleArray);
 %inline %{
-struct BlockMatrixHelper {
+struct DoubleMatrix {
   static bool isNull(double** matrix) {
     return matrix == NULL;
   }
@@ -141,4 +141,3 @@ struct PredefinedLossFunctions {
     }
   }
 %}
-
