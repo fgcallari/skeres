@@ -9,8 +9,8 @@ package object skeres {
 
   // Implicit conversions betwee pointer objects and
   // arrays or matrices.
-  implicit def doublePointerPointerToBlockMatrix(p: DoublePointerPointer) =
-    BlockMatrix(p)
+  implicit def doublePointerPointerToRichDoubleMatrix(p: DoublePointerPointer) =
+    RichDoubleMatrix(p)
 
   implicit def doublePointerToRichDoubleArray(p: DoublePointer) =
     RichDoubleArray(DoubleArray.frompointer(p))
@@ -43,11 +43,11 @@ case class RichDoubleArray(a: DoubleArray) {
 
 // Convenient access to matrices represented as
 // double**'s.
-case class BlockMatrix(data: DoublePointerPointer) {
-  def isNull: Boolean = BlockMatrixHelper.isNull(data)
+case class RichDoubleMatrix(data: DoublePointerPointer) {
+  def isNull: Boolean = DoubleMatrix.isNull(data)
 
   def doubleArrayRow(i: Int) = DoubleArray.frompointer {
-     BlockMatrixHelper.row(data, i)
+     DoubleMatrix.row(data, i)
   }
 
   def get(i: Int, j: Int) = doubleArrayRow(i).getitem(j)
