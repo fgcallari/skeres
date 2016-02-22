@@ -2,7 +2,7 @@ package org.somelightprojections.skeres
 
 import scala.reflect.ClassTag
 import scala.{specialized => sp}
-import spire.algebra.{InnerProductSpace, Module, NRoot, Order, Field, Trig}
+import spire.algebra.{Field, InnerProductSpace, NRoot, Order, Trig}
 import spire.implicits._
 import spire.math._
 

@@ -35,10 +35,16 @@ $CXX $CXXFLAGS \
 
 $LD $LDFLAGS \
 "${GEN_OBJ_DIR}/ceres_wrap.cc.o" \
--o "${GEN_LIB_DIR}/libskeres.dylib" \
+-o "${GEN_LIB_DIR}/libskeres.1.0${DLL_EXT}" \
 -L"${GLOG_LIB_DIR}" -lglog \
 -L"${GFLAGS_LIB_DIR}" -lgflags \
 -L"${CERES_BIN}/lib" -lceres
+
+(\
+  cd $GEN_LIB_DIR; \
+  ln -sf libskeres.1.0${DLL_EXT} libskeres.1${DLL_EXT}; \
+  ln -sf libskeres.1${DLL_EXT} libskeres${DLL_EXT} \
+)
 
 export DYLD_LIBRARY_PATH=\
 "$PWD/${GEN_LIB_DIR}"\

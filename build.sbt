@@ -2,6 +2,7 @@ scalaVersion := "2.11.7"
 
 val spire = "org.spire-math" %% "spire" % "0.11.0"
 val shapeless = "com.chuusai" %% "shapeless" % "2.2.5"
+val scalaTest = "org.scalatest" %% "scalatest" % "2.2.6" % "test"
 
 lazy val commonSettings = Seq(
   organization := "org.somelightprojections",
@@ -17,11 +18,11 @@ lazy val root = project
 lazy val core = project
   .settings(commonSettings: _*)
   .settings(
-    libraryDependencies ++= Seq(spire, shapeless)
+    libraryDependencies ++= Seq(spire, shapeless, scalaTest)
   )
 
 lazy val examples = project
-  .dependsOn(core % "compile->compile;test->compile")
+  .dependsOn(core)
   .settings(commonSettings: _*)
   .settings(
     libraryDependencies ++= Seq(spire)

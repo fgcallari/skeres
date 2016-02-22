@@ -30,13 +30,16 @@ CXXFLAGS="-c -fPIC -O3"
 LD="c++"
 LDFLAGS="-dynamiclib"
 
+# DLL filename suffix on this system.
+DLL_EXT=".dylib"
+
 #
 # END OF CONFIGURATION SECTION
 # Do not edit below, unless you know what you are doing
 # (achtung alles lookenpeepers ... blinkenlichts)
 #
-GEN_JAVA_DIR="./core/src/main/java/com/google/ceres"
-GEN_CPP_DIR="./core/src/main/c++/ceres"
-GEN_OBJ_DIR="./core/target/c++/ceres/obj"
-GEN_LIB_DIR="./lib"
+GEN_JAVA_DIR="core/src/main/java/com/google/ceres"
+GEN_CPP_DIR="core/src/main/c++/ceres"
+GEN_OBJ_DIR="core/target/c++/ceres/obj"
+GEN_LIB_DIR="lib"
 
