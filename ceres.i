@@ -17,8 +17,6 @@ using std::shared_ptr;
 
 #include "glog/logging.h"
 
-// Minimal set of ceres headers
-// needed for the demo
 #include "ceres/internal/config.h"
 #include "ceres/internal/scoped_ptr.h"
 #include "ceres/types.h"

@@ -23,9 +23,17 @@ trait MatrixAdapter[T] {
   def data: Array[T]
   def rowStride: Int
   def colStride: Int
+  def numRows: Int = if (isRowMajor) data.length / rowStride else data.length / numCols
+  def numCols: Int = if (isColMajor) data.length / colStride else data.length / numRows
+
+  def isRowMajor = colStride == 1
+  def isColMajor = rowStride == 1
 
   def apply(i: Int, j: Int): T = data(i * rowStride + j * colStride)
   def set(i: Int, j: Int, x: T): Unit = { data(i * rowStride + j * colStride) = x }
+
+  override def toString(): String =
+    s"MatrixAdapter(data=[${data.mkString(", ")}], rowStride=$rowStride, colStride=$colStride)"
 }
 
 trait RowMajorMatrixAdapter[T] extends MatrixAdapter[T] {
