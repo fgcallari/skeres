@@ -318,7 +318,7 @@ class RotationSpec extends WordSpec with MustMatchers {
       rotationMatrix must beOrthoNormal
       rotationMatrix must beNear3x3Matrix(expected)
     }
-    "transforms a rotation by pi/2 around X to a rotation matrix and back" in {
+    "transform a rotation by pi/2 around X to a rotation matrix and back" in {
       val angleAxis = Array(kPi / 2, 0, 0)
       val expected = ColumnMajorMatrixAdapter3x3(
         Array[Double](1, 0, 0, 0, 0, 1, 0, -1, 0))
@@ -328,7 +328,7 @@ class RotationSpec extends WordSpec with MustMatchers {
       val roundTrip = Rotation.rotationMatrixToAngleAxis(rotationMatrix)
       roundTrip must beNearAngleAxis(angleAxis)
     }
-    "transforms an angle-axis that rotates by pi about the Y axis to a rotation matrix and back" in {
+    "transform an angle-axis that rotates by pi about the Y axis to a rotation matrix and back" in {
       val angleAxis = Array(0, kPi, 0)
       val expected = ColumnMajorMatrixAdapter3x3(Array[Double](-1, 0, 0, 0, 1, 0, 0, 0, -1))
       val rotationMatrix = Rotation.angleAxisToRotationMatrix(angleAxis)
@@ -337,7 +337,7 @@ class RotationSpec extends WordSpec with MustMatchers {
       val roundTrip = Rotation.rotationMatrixToAngleAxis(rotationMatrix)
       roundTrip must beNearAngleAxis(angleAxis)
     }
-    "transforms an angle-axis near pi to a rotation matrix and back" in {
+    "transform an angle-axis near pi to a rotation matrix and back" in {
       val random = new Random(5)
       for (i <- 1 to kNumTrials) {
         // Make an axis by choosing three random numbers in [-1, 1) and
@@ -353,7 +353,7 @@ class RotationSpec extends WordSpec with MustMatchers {
         roundTrip must beNearAngleAxis(angleAxis)
       }
     }
-    "transforms a rotation matrix to an angle-axis at pi to and back" in {
+    "transform a rotation matrix to an angle-axis at pi to and back" in {
       // A rotation of kPi about the X axis;
       val inMatrix = ColumnMajorMatrixAdapter3x3(Array[Double](1, 0, 0, 0, -1, 0, 0, 0, -1))
       val angleAxis = Rotation.rotationMatrixToAngleAxis(inMatrix)
@@ -363,7 +363,7 @@ class RotationSpec extends WordSpec with MustMatchers {
       roundTrip must beOrthoNormal
       roundTrip must beNear3x3Matrix(inMatrix)
     }
-    "transforms an angle-axis that rotates by pi/3 about the Z axis to a rotation matrix" in {
+    "transform an angle-axis that rotates by pi/3 about the Z axis to a rotation matrix" in {
       val angleAxis = Array(0, 0, kPi / 3)
       val expected = ColumnMajorMatrixAdapter3x3(
         Array(0.5, sqrt(3) / 2, 0, -sqrt(3) / 2, 0.5, 0, 0, 0, 1)
@@ -423,7 +423,7 @@ class RotationSpec extends WordSpec with MustMatchers {
         rotationMatrix must beOrthoNormal
       }
     }
-    "transforms angle-axis to quaternion for small angles when jets are used" in {
+    "transform angle-axis to quaternion for small angles when jets are used" in {
       // Examine small x rotations that are still large enough
       // to be well within the range represented by doubles.
       implicit val jetDim = JetDim(3)
@@ -442,7 +442,7 @@ class RotationSpec extends WordSpec with MustMatchers {
         quat must beNearJetQuaternion(expected)
       }
     }
-    "transforms angle-axis to quaternion for very small angles when jets are used" in {
+    "transform angle-axis to quaternion for very small angles when jets are used" in {
       // Examine tiny x rotations that extend all the way to where
       // underflow occurs.
       implicit val jetDim = JetDim(3)
@@ -462,7 +462,7 @@ class RotationSpec extends WordSpec with MustMatchers {
         quat must beNearJetQuaternion(expected)
       }
     }
-    "transforms angle-axis to quaternion correctly at zero rotation" in {
+    "transform angle-axis to quaternion correctly at zero rotation" in {
       implicit val jetDim = JetDim(3)
       val angleAxis = Array(Jet(0.0, 0), Jet(0.0, 1), Jet(0.0, 2))
       val expected = Quaternion(
@@ -474,7 +474,7 @@ class RotationSpec extends WordSpec with MustMatchers {
       val quat = Rotation.angleAxisToQuaternion(angleAxis)
       quat must beNearJetQuaternion(expected)
     }
-    "transforms quaternion to angle-axis for small angles when jets are used" in {
+    "transform quaternion to angle-axis for small angles when jets are used" in {
       // Examine small x rotations that are still large enough
       // to be well within the range represented by doubles.
       implicit val jetDim = JetDim(4)
@@ -486,16 +486,17 @@ class RotationSpec extends WordSpec with MustMatchers {
         val angleAxis = Rotation.quaternionToAngleAxis(quaternion)
         val expected = Array(
           Jet(theta, Array(-2 * s, 2 * c, 0, 0)),
-          Jet(0.0, Array(0, 0, theta / s, 0)),
-          Jet(0.0, Array(0, 0, 0, theta / s))
+          Jet(0.0,   Array(0, 0, theta / s, 0)),
+          Jet(0.0,   Array(0, 0, 0, theta / s))
         )
         angleAxis must beNearJetArray(expected)
       }
     }
-    "transforms quaternion to angle-axis for very small angles when jets are used" in {
+    "transform quaternion to angle-axis for very small angles when jets are used" in {
       // Examine small x rotations that are still large enough
       // to be well within the range represented by doubles.
       implicit val jetDim = JetDim(4)
+      // TODO: investigate why we get NaN's in quaterniontoAngleAxis for i < kTinyZeroLimit / 2
       for (i <- kSmallTinyCutoff to kTinyZeroLimit / 2 by -1) {
         val theta = 10.0.pow(i)
         val s = sin(theta / 2)
@@ -513,7 +514,7 @@ class RotationSpec extends WordSpec with MustMatchers {
         angleAxis must beNearJetArray(expected)
       }
     }
-    "transforms quaternion to angle-axis for zero rotation when jets are used" in {
+    "transform quaternion to angle-axis for zero rotation when jets are used" in {
       // Examine small x rotations that are still large enough
       // to be well within the range represented by doubles.
       implicit val jetDim = JetDim(4)
@@ -525,6 +526,60 @@ class RotationSpec extends WordSpec with MustMatchers {
         Jet(0.0, Array(0.0, 0.0, 0.0, 2.0))
       )
       angleAxis must beNearJetArray(expected)
+    }
+    "transform quaternion to scaled rotation correctly for pre-canned values" in {
+      // Canned data generated in octave.
+      val q = Quaternion(
+        +0.1956830471754074,
+        -0.0150618562474847,
+        +0.7634572982788086,
+        -0.3019454777240753
+      )
+      // Scaled rotation matrix.
+      val Q = RowMajorMatrixAdapter3x3(
+        Array(
+          -0.6355194033477252,  0.0951730541682254,  0.3078870197911186,
+          -0.1411693904792992,  0.5297609702153905, -0.4551502574482019,
+          -0.2896955822708862, -0.4669396571547050, -0.4536309793389248
+        )
+      )
+      // With unit rows and columns.
+      val NQ = RowMajorMatrixAdapter3x3(
+        Array(
+          -0.8918859164053080,  0.1335655625725649,  0.4320876677394745,
+          -0.1981166751680096,  0.7434648665444399, -0.6387564287225856,
+          -0.4065578619806013, -0.6553016349046693, -0.6366242786393164
+        )
+      )
+
+      val Rq = Rotation.quaternionToScaledRotation(q)
+      Rq must beNear3x3Matrix(Q)
+
+      val NRq = Rotation.quaternionToRotation(q)
+      NRq must beNear3x3Matrix(NQ)
+    }
+    "rotate a point consistently with a rotation by matrix" in {
+      // Rotation defined by a unit quaternion.
+      val q = Quaternion(
+        0.2318160216097109,
+        -0.0178430356832060,
+        0.9044300776717159,
+        -0.3576998641394597
+      )
+      val p = Array(
+        +0.11,
+        -13.15,
+        1.17
+      )
+
+      val R = Rotation.quaternionToRotation(q)
+
+      val result1 = Rotation.unitQuaternionRotatePoint(q, p)
+
+      val result2 =
+      VectorRef(result2, 3) = ConstMatrixRef(R, 3, 3)* ConstVectorRef(p, 3);
+      ExpectArraysClose(3, result1, result2, kTolerance);
+
     }
   }
 }

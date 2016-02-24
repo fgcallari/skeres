@@ -19,7 +19,7 @@ import spire.math._
  * and rotation matrices embedded in larger matrices (such as a 3x4
  * projection matrix).
 */
-trait MatrixAdapter[T] {
+trait MatrixAdapter[@sp(Double) T] {
   def data: Array[T]
   def rowStride: Int
   def colStride: Int
@@ -36,20 +36,21 @@ trait MatrixAdapter[T] {
     s"MatrixAdapter(data=[${data.mkString(", ")}], rowStride=$rowStride, colStride=$colStride)"
 }
 
-trait RowMajorMatrixAdapter[T] extends MatrixAdapter[T] {
+trait RowMajorMatrixAdapter[@sp(Double) T] extends MatrixAdapter[T] {
   override val colStride = 1
+  def *(rhs: RowMajorMatrixAdapter[T]): RowMajorMatrixAdapter[T]
 }
 
-trait ColumnMajorMatrixAdapter[T] extends MatrixAdapter[T] {
+trait ColumnMajorMatrixAdapter[@sp(Double) T] extends MatrixAdapter[T] {
   override val rowStride = 1
 }
 
-case class RowMajorMatrixAdapter3x3[T](override val data: Array[T])
+case class RowMajorMatrixAdapter3x3[@sp(Double) T](override val data: Array[T])
   extends RowMajorMatrixAdapter[T] {
   override val rowStride = 3
 }
 
-case class ColumnMajorMatrixAdapter3x3[T](override val data: Array[T])
+case class ColumnMajorMatrixAdapter3x3[@sp(Double) T](override val data: Array[T])
   extends ColumnMajorMatrixAdapter[T] {
   override val colStride = 3
 }
@@ -377,7 +378,7 @@ object Rotation {
         R.set(i, j, R(i, j) * invNorm)
       }
     }
-    RowMajorMatrixAdapter3x3(Array.empty)
+    R
   }
 
   /**
