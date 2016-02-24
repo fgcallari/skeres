@@ -38,7 +38,6 @@ trait MatrixAdapter[@sp(Double) T] {
 
 trait RowMajorMatrixAdapter[@sp(Double) T] extends MatrixAdapter[T] {
   override val colStride = 1
-  def *(rhs: RowMajorMatrixAdapter[T]): RowMajorMatrixAdapter[T]
 }
 
 trait ColumnMajorMatrixAdapter[@sp(Double) T] extends MatrixAdapter[T] {

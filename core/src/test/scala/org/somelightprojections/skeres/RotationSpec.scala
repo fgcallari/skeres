@@ -43,6 +43,37 @@ class RotationSpec extends WordSpec with MustMatchers {
   //
   // Some predicates and matchers used in the tests below
   //
+  def isNearArray(expected: Array[Double], left: Array[Double]): Boolean = {
+    require(expected.length == left.length)
+    expected.toIterator.zip(left.toIterator).forall { case (e, l) => abs(e - l) <= kTolerance }
+  }
+
+  def beNearArray(expected: Array[Double]): Matcher[Array[Double]] =
+    Matcher { left: Array[Double] =>
+      MatchResult(
+        isNearArray(expected, left),
+        s"$left, $expected are not near",
+        s"$left, $expected are near"
+      )
+    }
+
+  def isNearQuaternion(expected: Quaternion[Double], left: Quaternion[Double]): Boolean = {
+    // Quaternions are equivalent upto a sign change. So we will compare
+    // both signs before declaring failure.
+    val aExpected = Array(expected.r, expected.i, expected.j, expected.k)
+    val aLeft = Array(left.r, left.i, left.j, left.k)
+    isNearArray(aExpected, aLeft) || isNearArray(aExpected, -aLeft)
+  }
+
+  def beNearQuaternion(expected: Quaternion[Double]): Matcher[Quaternion[Double]] =
+    Matcher { left: Quaternion[Double] =>
+      MatchResult(
+        isNearQuaternion(expected, left),
+        s"$left, $expected are not near",
+        s"$left, $expected are near"
+      )
+    }
+
   def isNormalizedQuaternion(left: Quaternion[Double]): Boolean =
     abs(1 - left.abs.pow(2)) <= kTolerance
 
@@ -52,24 +83,6 @@ class RotationSpec extends WordSpec with MustMatchers {
         isNormalizedQuaternion(left),
         s"$left is not normalized",
         s"$left is normalized"
-      )
-    }
-
-  def isNearQuaternion(expected: Quaternion[Double], left: Quaternion[Double]): Boolean = {
-    // Quaternions are equivalent upto a sign change. So we will compare
-    // both signs before declaring failure.
-    val qLeft = Vector(left.r, left.i, left.j, left.k)
-    val qExpected = Vector(expected.r, expected.i, expected.j, expected.k)
-    qLeft.zip(qExpected).forall { case (l, e) => abs(l - e) <= kTolerance } ||
-      qLeft.zip(qExpected).forall { case (l, e) => abs(l + e) <= kTolerance }
-  }
-
-  def beNearQuaternion(expected: Quaternion[Double]): Matcher[Quaternion[Double]] =
-    Matcher { left: Quaternion[Double] =>
-      MatchResult(
-        isNearQuaternion(expected, left),
-        s"$left, $expected are not near",
-        s"$left, $expected are near"
       )
     }
 
@@ -124,11 +137,7 @@ class RotationSpec extends WordSpec with MustMatchers {
     require(expected.numCols == 3)
     require(left.numRows == 3)
     require(left.numCols == 3)
-    val diffs = for {
-      i <- (0 until 3).toIterator
-      j <- (0 until 3).toIterator
-    } yield abs(left(i, j) - expected(i, j))
-    diffs.forall(_ <= kTolerance)
+    isNearArray(expected.data, left.data)
   }
 
   def beNear3x3Matrix(expected: MatrixAdapter[Double]): Matcher[MatrixAdapter[Double]] =
@@ -558,7 +567,7 @@ class RotationSpec extends WordSpec with MustMatchers {
       val NRq = Rotation.quaternionToRotation(q)
       NRq must beNear3x3Matrix(NQ)
     }
-    "rotate a point consistently with a rotation by matrix" in {
+    "rotate a point by a quaternion consistently with a rotation by a matrix" in {
       // Rotation defined by a unit quaternion.
       val q = Quaternion(
         0.2318160216097109,
@@ -566,20 +575,19 @@ class RotationSpec extends WordSpec with MustMatchers {
         0.9044300776717159,
         -0.3576998641394597
       )
-      val p = Array(
-        +0.11,
-        -13.15,
-        1.17
-      )
 
-      val R = Rotation.quaternionToRotation(q)
+      val p = Array(+0.11, -13.15, 1.17)
 
       val result1 = Rotation.unitQuaternionRotatePoint(q, p)
 
-      val result2 =
-      VectorRef(result2, 3) = ConstMatrixRef(R, 3, 3)* ConstVectorRef(p, 3);
-      ExpectArraysClose(3, result1, result2, kTolerance);
+      val R = Rotation.quaternionToRotation(q)
+      val result2 = {
+        val r = Array(0.0, 0.0, 0.0)
+        cforRange2(0 until 3, 0 until 3) { (i, j) => r(i) += R(i, j) * p(j) }
+        r
+      }
 
+      result1 must beNearArray(result2)
     }
   }
 }
