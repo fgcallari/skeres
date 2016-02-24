@@ -149,7 +149,7 @@ object Rotation {
   }
 
   /**
-   * Conversions between 3x3 rotation matrix (in column major order) and
+   * Conversions between 3x3 rotation matrix (in COLUMN MAJOR order) and
    * quaternion rotation representations.  Templated for use with
    * autodifferentiation.
   */
@@ -189,7 +189,7 @@ object Rotation {
   }
 
   /**
-   * Conversions between 3x3 rotation matrix (in column major order) and axis-angle rotation
+   * Conversions between 3x3 rotation matrix (in COLUMN MAJOR order) and axis-angle rotation
    * representations.  Templated for use with autodifferentiation.
    */
   def rotationMatrixToAngleAxis[T: Field: Trig: NRoot: Order: ClassTag](R: Array[T]): Array[T] =

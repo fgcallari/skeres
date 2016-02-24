@@ -43,15 +43,15 @@ class RotationSpec extends WordSpec with MustMatchers {
   //
   // Some predicates and matchers used in the tests below
   //
-  def isNearArray(expected: Array[Double], left: Array[Double]): Boolean = {
+  def isNearArray(expected: Array[Double], left: Array[Double], tol: Double = kTolerance): Boolean = {
     require(expected.length == left.length)
-    expected.toIterator.zip(left.toIterator).forall { case (e, l) => abs(e - l) <= kTolerance }
+    expected.toIterator.zip(left.toIterator).forall { case (e, l) => abs(e - l) <= tol }
   }
 
-  def beNearArray(expected: Array[Double]): Matcher[Array[Double]] =
+  def beNearArray(expected: Array[Double], tol: Double = kTolerance): Matcher[Array[Double]] =
     Matcher { left: Array[Double] =>
       MatchResult(
-        isNearArray(expected, left),
+        isNearArray(expected, left, tol),
         s"$left, $expected are not near",
         s"$left, $expected are near"
       )
@@ -220,6 +220,30 @@ class RotationSpec extends WordSpec with MustMatchers {
   //
   // Showtime...
   //
+  "ColumnMajorMatrixAdapter3x3" should {
+    "have expected properties" in {
+      val a = Array(1,2,3,4,5,6,7,8,9)
+      val m = ColumnMajorMatrixAdapter3x3(a)
+      m.data must be(a)
+      m.numRows must be(3)
+      m.numCols must be(3)
+      m.rowStride must be(1)
+      m.colStride must be(3)
+      cforRange2(0 until 3, 0 until 3) { (i, j) => m(i, j) must be(a(j * 3 + i)) }
+    }
+  }
+  "RowMajorMatrixAdapter3x3" should {
+    "have expected properties" in {
+      val a = Array(1,2,3,4,5,6,7,8,9)
+      val m = RowMajorMatrixAdapter3x3(a)
+      m.data must be(a)
+      m.numRows must be(3)
+      m.numCols must be(3)
+      m.rowStride must be(3)
+      m.colStride must be(1)
+      cforRange2(0 until 3, 0 until 3) { (i, j) => m(i, j) must be(a(i * 3 + j)) }
+    }
+  }
   "Rotation" should {
     "transform a zero angle-axis to a real unit quaternion" in {
       val angleAxis = Array[Double](0, 0, 0)
@@ -291,9 +315,8 @@ class RotationSpec extends WordSpec with MustMatchers {
         // Make an axis by choosing three random numbers in [-1, 1) and
         // normalizing.
         val tmp = (0 until 3).map(_ => random.nextDouble() * 2 - 1).toArray
-        val norm = tmp.norm
         val theta = kPi * (2 * random.nextDouble() - 1)
-        val angleAxis = tmp :* (theta / norm)
+        val angleAxis = tmp :* (theta / tmp.norm)
         val quaternion = Rotation.angleAxisToQuaternion(angleAxis)
         quaternion must beNormalizedQuaternion
         val roundTrip = Rotation.quaternionToAngleAxis(quaternion)
@@ -306,7 +329,7 @@ class RotationSpec extends WordSpec with MustMatchers {
         // Make a quaternion by choosing four random numbers in [-1, 1) and
         // normalizing.
         val tmp = (0 until 4).map(_ => random.nextDouble() * 2 - 1)
-        val quaternion = Quaternion(tmp(0), tmp(1), tmp(2), tmp(3)) / tmp.norm
+        val quaternion = Quaternion(tmp(0), tmp(1), tmp(2), tmp(3)).normalize
         quaternion must beNormalizedQuaternion
         val angleAxis = Rotation.quaternionToAngleAxis(quaternion)
         val roundTrip = Rotation.angleAxisToQuaternion(angleAxis)
@@ -568,26 +591,66 @@ class RotationSpec extends WordSpec with MustMatchers {
       NRq must beNear3x3Matrix(NQ)
     }
     "rotate a point by a quaternion consistently with a rotation by a matrix" in {
-      // Rotation defined by a unit quaternion.
-      val q = Quaternion(
-        0.2318160216097109,
-        -0.0178430356832060,
-        0.9044300776717159,
-        -0.3576998641394597
-      )
+      val random = new Random(5)
+      for (i <- 1 to kNumTrials) {
+        // Rotation defined by a unit quaternion.
+        val quat = Quaternion(
+          random.nextDouble(), random.nextDouble(), random.nextDouble(), random.nextDouble()
+        ).normalize
+        quat must beNormalizedQuaternion
 
-      val p = Array(+0.11, -13.15, 1.17)
+        val p = 10.0 *: (1 to 3).map(_ => 2 * random.nextDouble() - 1).toArray
 
-      val result1 = Rotation.unitQuaternionRotatePoint(q, p)
+        val result1 = Rotation.unitQuaternionRotatePoint(quat, p)
 
-      val R = Rotation.quaternionToRotation(q)
-      val result2 = {
-        val r = Array(0.0, 0.0, 0.0)
-        cforRange2(0 until 3, 0 until 3) { (i, j) => r(i) += R(i, j) * p(j) }
-        r
+        val R = Rotation.quaternionToRotation(quat)
+        val result2 = {
+          val r = Array(0.0, 0.0, 0.0)
+          cforRange2(0 until 3, 0 until 3) { (i, j) => r(i) += R(i, j) * p(j) }
+          r
+        }
+        result1 must beNearArray(result2, kLooseTolerance)
       }
+    }
+    "rotate a point by a angle-axis consistently with a rotation by a matrix" in {
+      val random = new Random(5)
+      for (i <- 1 to kNumTrials) {
+        // Rotation defined by a unit quaternion.
+        val theta = kPi * (2 * random.nextDouble() - 1)
+        val angleAxis = theta *: (1 to 3).map(_ => 2 * random.nextDouble() - 1).toArray.normalize
 
-      result1 must beNearArray(result2)
+        val p = 10.0 *: (1 to 3).map(_ => 2 * random.nextDouble() - 1).toArray
+
+        val result1 = Rotation.angleAxisRotatePoint(angleAxis, p)
+
+        val R = Rotation.angleAxisToRotationMatrix(angleAxis)
+        val result2 = {
+          val r = Array(0.0, 0.0, 0.0)
+          cforRange2(0 until 3, 0 until 3) { (i, j) => r(i) += R(i, j) * p(j) }
+          r
+        }
+        result1 must beNearArray(result2, kLooseTolerance)
+      }
+    }
+    "rotate a point by a angle-axis consistently with a rotation by a matrix near zero angle" in {
+      val random = new Random(5)
+      for (i <- 1 to kNumTrials) {
+        // Rotation defined by a unit quaternion.
+        val theta = 1.0e-16 * (2 * random.nextDouble() - 1)
+        val angleAxis = theta *: (1 to 3).map(_ => 2 * random.nextDouble() - 1).toArray.normalize
+
+        val p = 10.0 *: (1 to 3).map(_ => 2 * random.nextDouble() - 1).toArray
+
+        val result1 = Rotation.angleAxisRotatePoint(angleAxis, p)
+
+        val R = Rotation.angleAxisToRotationMatrix(angleAxis)
+        val result2 = {
+          val r = Array(0.0, 0.0, 0.0)
+          cforRange2(0 until 3, 0 until 3) { (i, j) => r(i) += R(i, j) * p(j) }
+          r
+        }
+        result1 must beNearArray(result2, kLooseTolerance)
+      }
     }
   }
 }
