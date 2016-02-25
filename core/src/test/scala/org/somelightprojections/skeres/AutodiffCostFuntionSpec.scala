@@ -36,7 +36,7 @@ class AutodiffCostFuntionSpec extends WordSpec with MustMatchers {
       val residuals: DoublePointer = new DoubleArray(1).toPointer
 
       val costFunction = BinaryScalarCost(1.0).toAutodiffCostFunction
-      costFunction.evaluate(parameters, residuals, nullJacobians)
+      costFunction.evaluate(parameters, residuals, nullJacobians) must be(true)
       residuals.get(0) must be(10.0)
 
       val jacobiansVector = new StdVectorDoublePointer()
@@ -45,7 +45,7 @@ class AutodiffCostFuntionSpec extends WordSpec with MustMatchers {
       val jacobians: DoublePointerPointer = RichDoubleMatrix.fromStdVector(jacobiansVector)
 
       residuals.set(0, 0.0)
-      costFunction.evaluate(parameters, residuals, jacobians)
+      costFunction.evaluate(parameters, residuals, jacobians) must be(true)
       residuals.get(0) must be(10.0)
       jacobians.get(0, 0) must be(3)
       jacobians.get(0, 1) must be(4)

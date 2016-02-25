@@ -69,13 +69,6 @@ case class AutodiffCostFunction(costFunctor: CostFunctor)
           }
           parBlockOffset += ni
         }
-//        cforRange(0 until costFunctor.kNumResiduals) { i =>
-//          val jyi = jy(i)
-//          residuals.set(i, jyi.real)
-//          if (!jacobians.isNull && jacobians.hasRow(i)) {
-//            jacobians.copyRowFrom(i, jyi.infinitesimal)
-//          }
-//        }
         true
       }
     }
