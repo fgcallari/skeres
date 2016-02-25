@@ -1,5 +1,6 @@
 package org.somelightprojections.skeres
 
+import com.google.ceres.DoubleArray
 import spire.implicits._
 import spire.math.{Jet, JetDim}
 
@@ -50,11 +51,31 @@ case class AutodiffCostFunction(costFunctor: CostFunctor)
       if (jy.isEmpty) {
         false
       } else {
-        cforRange(0 until costFunctor.kNumResiduals) { i =>
-          val jyi = jy(i)
-          residuals.set(i, jyi.real)
-          if (!jacobians.isNull && jacobians.hasRow(i)) jacobians.copyRowFrom(i, jyi.infinitesimal)
+        cforRange(0 until kNumResiduals)(r => residuals.set(r, jy(r).real))
+
+        var parBlockOffset = 0
+        cforRange(0 until numParameterBlocks) { i =>
+          val ni = costFunctor.N(i)
+          if (jacobians.hasRow(i)) {
+            val jacobianRow: DoubleArray = jacobians.getRow(i)
+            var col = 0
+            cforRange(0 until kNumResiduals) { r =>
+              val derivatives: Array[Double] = jy(r).infinitesimal
+              cforRange(0 until ni) { p =>
+                jacobianRow.set(col, derivatives(parBlockOffset + p))
+                col += 1
+              }
+            }
+          }
+          parBlockOffset += ni
         }
+//        cforRange(0 until costFunctor.kNumResiduals) { i =>
+//          val jyi = jy(i)
+//          residuals.set(i, jyi.real)
+//          if (!jacobians.isNull && jacobians.hasRow(i)) {
+//            jacobians.copyRowFrom(i, jyi.infinitesimal)
+//          }
+//        }
         true
       }
     }
