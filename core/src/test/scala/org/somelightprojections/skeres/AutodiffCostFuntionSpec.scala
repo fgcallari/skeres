@@ -1,12 +1,11 @@
 package org.somelightprojections.skeres
 
-import com.google.ceres.{DoubleArray, StdVectorDoublePointer, StdVectorDouble}
+import com.google.ceres.{DoubleArray, StdVectorDoublePointer}
 import org.scalatest.{MustMatchers, WordSpec}
 import scala.reflect.ClassTag
 import scala.{specialized => sp}
 import spire.algebra._
 import spire.implicits._
-import spire.math._
 
 class AutodiffCostFuntionSpec extends WordSpec with MustMatchers {
 

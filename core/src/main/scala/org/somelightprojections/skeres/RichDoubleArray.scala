@@ -16,9 +16,9 @@ case class RichDoubleArray(a: DoubleArray) {
     a
   }
 
-  def toPointer: DoublePointer = a.cast
-
   def isNull: Boolean = toPointer == null
+
+  def toPointer: DoublePointer = a.cast
 
   def toArray(length: Int): Array[Double] = {
     val aScala = Array.ofDim[Double](length)

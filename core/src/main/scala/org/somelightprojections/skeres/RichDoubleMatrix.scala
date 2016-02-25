@@ -4,6 +4,8 @@ import com.google.ceres.{StdVectorDoublePointer, DoubleArray, DoubleMatrix}
 
 // Convenient access to matrices represented as
 // double**'s.
+// This is intended for manipulation in Scala of memory blocks passed by
+// the native code. Do not use in the wild for general matrix operations.
 case class RichDoubleMatrix(data: DoublePointerPointer) {
   def isNull: Boolean = DoubleMatrix.isNull(data)
 
