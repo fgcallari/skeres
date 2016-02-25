@@ -23,4 +23,10 @@ case class RichDoubleMatrix(data: DoublePointerPointer) {
 object RichDoubleMatrix {
   def fromStdVector(vec: StdVectorDoublePointer): DoublePointerPointer =
     DoubleMatrix.toPointerPointer(vec)
+
+  def ofSize(numRows: Int, numColumns: Int): DoublePointerPointer = {
+    val pointerVector = new StdVectorDoublePointer(numRows)
+    (0 until numColumns).foreach(i => pointerVector.set(i, new DoubleArray(numColumns).toPointer))
+    fromStdVector(pointerVector)
+  }
 }

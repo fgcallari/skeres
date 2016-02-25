@@ -9,8 +9,9 @@ import spire.implicits._
 import spire.math._
 
 class AutodiffCostFuntionSpec extends WordSpec with MustMatchers {
+
   case class BinaryScalarCost(a: Double) extends CostFunctor(1, 2, 2) {
-    def apply[@sp(Double) T: Field : Trig : NRoot : Order : ClassTag](p: Array[T]*): Array[T] = {
+    override def apply[@sp(Double) T: Field: Trig: NRoot: Order: ClassTag](p: Array[T]*): Array[T] = {
       require(p.length == 2)
       require(p(0).length == 2)
       require(p(1).length == 2)
@@ -23,10 +24,7 @@ class AutodiffCostFuntionSpec extends WordSpec with MustMatchers {
 
   "AutodiffCostFunction" should {
     "evaluate cost and jacobians on a bilinear cost function" in {
-      val parametersVector = new StdVectorDoublePointer()
-      parametersVector.add(new DoubleArray(2).toPointer)
-      parametersVector.add(new DoubleArray(2).toPointer)
-      val parameters: DoublePointerPointer = RichDoubleMatrix.fromStdVector(parametersVector)
+      val parameters: DoublePointerPointer = RichDoubleMatrix.ofSize(2, 2)
       parameters.set(0, 0, 1.0)
       parameters.set(0, 1, 2.0)
       parameters.set(1, 0, 3.0)
@@ -36,6 +34,7 @@ class AutodiffCostFuntionSpec extends WordSpec with MustMatchers {
       val residuals: DoublePointer = new DoubleArray(1).toPointer
 
       val costFunction = BinaryScalarCost(1.0).toAutodiffCostFunction
+
       costFunction.evaluate(parameters, residuals, nullJacobians) must be(true)
       residuals.get(0) must be(10.0)
 
