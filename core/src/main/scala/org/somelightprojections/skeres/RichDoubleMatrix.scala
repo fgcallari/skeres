@@ -30,10 +30,10 @@ object RichDoubleMatrix {
 
   def ofSize(numRows: Int, numColumns: Int): DoublePointerPointer = {
     if (numRows == 0 || numColumns == 0) {
-      fromStdVector(new StdVectorDoublePointer())
+      fromStdVector(null)
     } else {
       val pointerVector = new StdVectorDoublePointer(numRows)
-      (0 until numColumns).foreach(i => pointerVector.set(i, new DoubleArray(numColumns).toPointer))
+      (0 until numRows).foreach(i => pointerVector.set(i, new DoubleArray(numColumns).toPointer))
       fromStdVector(pointerVector)
     }
   }
