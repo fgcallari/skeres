@@ -1,6 +1,6 @@
 package org.somelightprojections.skeres
 
-import com.google.ceres.{DoubleArray, StdVectorDoublePointer}
+import com.google.ceres.DoubleArray
 import org.scalatest.{MustMatchers, WordSpec}
 import scala.reflect.ClassTag
 import scala.{specialized => sp}
