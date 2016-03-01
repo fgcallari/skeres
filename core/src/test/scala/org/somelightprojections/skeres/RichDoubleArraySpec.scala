@@ -17,5 +17,19 @@ class RichDoubleArraySpec extends WordSpec with MustMatchers {
         buffer.getitem(i) must be(2 * i)
       }
     }
+    "produce slices of arrays" in {
+      val buffer = new DoubleArray(10)
+      for (i <- 0 until 10) {
+        buffer.setitem(i, i)
+      }
+      val slice: DoublePointer = buffer.slice(5)
+      for (i <- 0 until 5) {
+        slice.set(i, 2 * (i + 5))
+      }
+      for (i <- 0 until 10) {
+        if (i < 5) buffer.get(i) must be(i)
+        else buffer.get(i) must be(2 * i)
+      }
+    }
   }
 }

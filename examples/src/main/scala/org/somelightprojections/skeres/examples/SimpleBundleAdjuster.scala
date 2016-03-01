@@ -1,5 +1,10 @@
 package org.somelightprojections.skeres.examples
 
+/**
+  * A port to scale of the simple_bundle_adjuster.cc example from the ceres-solver
+  * source distribution
+  */
+
 import com.google.ceres._
 import java.io.File
 import java.util.Scanner
@@ -9,6 +14,7 @@ import scala.{specialized => sp}
 import spire.algebra.{Field, NRoot, Order, Trig}
 import spire.implicits._
 
+
 case class BalProblem(
   numCameras: Int,
   numPoints: Int,
@@ -17,20 +23,19 @@ case class BalProblem(
   pointIndex: Vector[Int],
   cameraIndex: Vector[Int],
   observations: Vector[Double],
-  parameters: DoubleArray
+  parameters: DoubleArray  // DoubleArray because it is optimized.
 ) {
   def mutableCameras: DoublePointer = parameters.toPointer
-  def mutablePoints: DoublePointer = DoubleArraySlice.get(parameters.toPointer, 9 * numCameras)
+  def mutablePoints: DoublePointer = parameters.slice(9 * numCameras)
 
-  def mutableCameraForObservation(i: Int): DoublePointer =
-    DoubleArraySlice.get(mutableCameras, cameraIndex(i) * 9)
+  def mutableCameraForObservation(i: Int): DoublePointer = mutableCameras.slice(cameraIndex(i) * 9)
 
-  def mutablePointForObservation(i: Int): DoublePointer =
-    DoubleArraySlice.get(mutablePoints, pointIndex(i) * 3)
+  def mutablePointForObservation(i: Int): DoublePointer = mutablePoints.slice(pointIndex(i) * 3)
 }
 
 object BalProblem {
   def fromFile(filePath: String): BalProblem = {
+    print(s"Loading BalProblem from $filePath ...")
     val file = new File(filePath)
     val scanner = new Scanner(file)
     val numCameras = scanner.nextInt()
@@ -55,6 +60,8 @@ object BalProblem {
     for (i <- 0 until numParameters) {
       parameters.set(i, scanner.nextDouble())
     }
+
+    println(" done")
 
     BalProblem(
       numCameras,
@@ -111,8 +118,15 @@ class SnavelyReprojectionError(observedX: Double, observedY: Double) extends Cos
   }
 }
 
+object SnavelyReprojectionError {
+  def apply(observedX: Double, observedY: Double): CostFunction =
+    new SnavelyReprojectionError(observedX, observedY).toAutodiffCostFunction
+}
+
 object SimpleBundleAdjuster {
   def main(args: Array[String]): Unit = {
+    ceres.initGoogleLogging("SimpleBundleAdjuster")
+
     val balProblem = BalProblem.fromFile(args(0))
     val observations = balProblem.observations
     // Create residuals for each observation in the bundle adjustment problem. The
@@ -122,18 +136,13 @@ object SimpleBundleAdjuster {
     problemOptions.setLossFunctionOwnership(Ownership.DO_NOT_TAKE_OWNERSHIP)
 
     val problem = new Problem(problemOptions)
+    val lossFunction = PredefinedLossFunctions.trivialLoss()
     for (i <- 0 until balProblem.numObservations) {
-      val costFunction: CostFunction = new SnavelyReprojectionError(
-        observations(2 * i + 0),
-        observations(2 * i + 1)
-      ).toAutodiffCostFunction
-
-      problem.addResidualBlock(
-        costFunction,
-        PredefinedLossFunctions.trivialLoss(),
-        balProblem.mutableCameraForObservation(i),
-        balProblem.mutablePointForObservation(i)
-      )
+      val obsCost: CostFunction =
+        SnavelyReprojectionError(observations(2 * i + 0), observations(2 * i + 1))
+      val obsCamera = balProblem.mutableCameraForObservation(i)
+      val obsPoint = balProblem.mutablePointForObservation(i)
+      problem.addResidualBlock(obsCost, lossFunction, obsCamera, obsPoint)
     }
 
     val options = new Solver.Options
@@ -142,6 +151,7 @@ object SimpleBundleAdjuster {
 
     val summary = new Solver.Summary
     ceres.solve(options, problem, summary)
+
     println(summary.fullReport())
   }
 }
