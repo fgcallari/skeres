@@ -103,10 +103,10 @@ object PowellAnalytic {
 
     val loss = PredefinedLossFunctions.trivialLoss
     val problem = new Problem(problemOptions)
-    problem.addResidualBlock(F1a, loss, x1, x2)
-    problem.addResidualBlock(F2a, loss, x3, x4)
-    problem.addResidualBlock(F3a, loss, x2, x3)
-    problem.addResidualBlock(F4a, loss, x1, x4)
+    problem.addResidualBlock(F1a, loss, x1.toPointer, x2.toPointer)
+    problem.addResidualBlock(F2a, loss, x3.toPointer, x4.toPointer)
+    problem.addResidualBlock(F3a, loss, x2.toPointer, x3.toPointer)
+    problem.addResidualBlock(F4a, loss, x1.toPointer, x4.toPointer)
 
     val options = new Solver.Options
     options.setMinimizerType(MinimizerType.TRUST_REGION)

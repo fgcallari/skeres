@@ -10,12 +10,12 @@ object Problem {
 final class Problem(opts: Problem.Options) extends CeresProblem(opts) {
   def this() = this(new Problem.Options())
 
-  def addResidualBlock(cost: CostFunction, loss: LossFunction, x: DoubleArray*): ResidualBlockId = {
+  def addResidualBlock(cost: CostFunction, loss: LossFunction, x: DoublePointer*): ResidualBlockId = {
     costs += cost
     losses += loss
 
     val xv = new StdVectorDoublePointer()
-    x.foreach(xi => xv.add(xi.toPointer))
+    x.foreach(xi => xv.add(xi))
     addResidualBlock(cost, loss, xv)
   }
 

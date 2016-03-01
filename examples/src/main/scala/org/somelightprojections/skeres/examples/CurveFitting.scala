@@ -113,7 +113,11 @@ object CurveFitting {
 
     val problem = new Problem(problemOptions)
     Data.grouped(2).foreach { case Vector(x, y) =>
-      problem.addResidualBlock(ExponentialResidual(x, y).toAutodiffCostFunction, loss, m, c)
+      problem.addResidualBlock(
+        ExponentialResidual(x, y).toAutodiffCostFunction,
+        loss,
+        m.toPointer,
+        c.toPointer)
     }
 
     val options = new Solver.Options

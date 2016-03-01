@@ -28,7 +28,7 @@ object HelloWorld {
 
     val cost = HelloCostFunctor.toAutodiffCostFunction
     val loss = PredefinedLossFunctions.trivialLoss
-    problem.addResidualBlock(cost, loss, x)
+    problem.addResidualBlock(cost, loss, x.toPointer)
 
     val solverOptions = new Solver.Options
     solverOptions.setMinimizerProgressToStdout(true)

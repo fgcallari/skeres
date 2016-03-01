@@ -1,6 +1,6 @@
 package org.somelightprojections.skeres.examples
 
-import com.google.ceres.{DoubleArray, Ownership, CostFunction}
+import com.google.ceres._
 import java.io.File
 import java.util.Scanner
 import org.somelightprojections.skeres._
@@ -19,7 +19,14 @@ case class BalProblem(
   observations: Vector[Double],
   parameters: DoubleArray
 ) {
+  def mutableCameras: DoublePointer = parameters.toPointer
+  def mutablePoints: DoublePointer = DoubleArraySlice.get(parameters.toPointer, 9 * numCameras)
 
+  def mutableCameraForObservation(i: Int): DoublePointer =
+    DoubleArraySlice.get(mutableCameras, cameraIndex(i) * 9)
+
+  def mutablePointForObservation(i: Int): DoublePointer =
+    DoubleArraySlice.get(mutablePoints, pointIndex(i) * 3)
 }
 
 object BalProblem {
@@ -46,7 +53,7 @@ object BalProblem {
     }
 
     for (i <- 0 until numParameters) {
-      parameters.set(i, scanner.nextInt())
+      parameters.set(i, scanner.nextDouble())
     }
 
     BalProblem(
@@ -57,13 +64,12 @@ object BalProblem {
       pointIndex.toVector,
       cameraIndex.toVector,
       observations.toVector,
-      parameters.toVector
+      parameters
     )
   }
 }
 
-case class SnavelyReprojectionError(observedX: Double, observedY: Double)
-  extends CostFunctor(2, 9, 3) {
+class SnavelyReprojectionError(observedX: Double, observedY: Double) extends CostFunctor(2, 9, 3) {
 
   override def apply[@sp(Double) T: Field : Trig : NRoot : Order : ClassTag](
     params: Array[T]*
@@ -97,20 +103,15 @@ case class SnavelyReprojectionError(observedX: Double, observedY: Double)
 
     // Compute final projected point position.
     val focal = camera(6)
-    val predicted_x = focal * distortion * xp
-    val predicted_y = focal * distortion * yp
+    val predictedX = focal * distortion * xp
+    val predictedY = focal * distortion * yp
 
     // The error is the difference between the predicted and observed position.
-    Array(predicted_x - observed_x, predicted_y - observed_y)
+    Array(predictedX - observedX, predictedY - observedY)
   }
 }
 
-object SnavelyReprojectionError {
-  def apply(observedX: Double, observedY: Double): CostFunction =
-    SnavelyReprojectionError(observedX, observedY).toAutodiffCostFunction
-}
-
-class SimpleBundleAdjuster {
+object SimpleBundleAdjuster {
   def main(args: Array[String]): Unit = {
     val balProblem = BalProblem.fromFile(args(0))
     val observations = balProblem.observations
@@ -121,5 +122,26 @@ class SimpleBundleAdjuster {
     problemOptions.setLossFunctionOwnership(Ownership.DO_NOT_TAKE_OWNERSHIP)
 
     val problem = new Problem(problemOptions)
+    for (i <- 0 until balProblem.numObservations) {
+      val costFunction: CostFunction = new SnavelyReprojectionError(
+        observations(2 * i + 0),
+        observations(2 * i + 1)
+      ).toAutodiffCostFunction
+
+      problem.addResidualBlock(
+        costFunction,
+        PredefinedLossFunctions.trivialLoss(),
+        balProblem.mutableCameraForObservation(i),
+        balProblem.mutablePointForObservation(i)
+      )
+    }
+
+    val options = new Solver.Options
+    options.setLinearSolverType(LinearSolverType.DENSE_SCHUR)
+    options.setMinimizerProgressToStdout(true)
+
+    val summary = new Solver.Summary
+    ceres.solve(options, problem, summary)
+    println(summary.fullReport())
   }
 }
