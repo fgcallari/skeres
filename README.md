@@ -9,8 +9,9 @@ On MacOSX:
    as explained in the ceres user guide. 
  * **NOTE CAREFULLY:** ceres must be built as a DLL, and so must be its dependencies. 
  * Edit file configuraton.sh to reflect your environment.
- * Run *mkceres.sh*, it will compile and link the wrappers, then plop you in the *sbt* console.
- 
+ * Run *build.sh*, it will compile and link the wrappers, then plop you in the *sbt* console.
+ * When done or in trouble, run *clean.sh* to reset the distribution to its original state.
+
 ## Running the examples
  
  * At the *sbt* console, type
