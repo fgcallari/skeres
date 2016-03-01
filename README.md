@@ -3,7 +3,7 @@
 A port to Scala of the Ceres Solver Library.
 
 ## Build
-
+On MacOSX:
  * Download and install SWIG from swig.org, or using your favorite package manager.
  * Download and build ceres-solver from its sources at ceres-solver.org, plus its dependencies
    as explained in the ceres user guide. 

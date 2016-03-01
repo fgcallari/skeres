@@ -14,13 +14,13 @@ CERES_BIN="${HOME}/src/ceres-bin"
 HOMEBREW_TOP="/opt/twitter/Cellar"
 
 # Installation directories for some ceres-solver dependencies (headers,  DLL's).
-GLOG_INCLUDE_DIR="/opt/twitter/Cellar/glog/0.3.4/include"
-GLOG_LIB_DIR="/opt/twitter/Cellar/glog/0.3.4/lib"
+GLOG_INCLUDE_DIR="${HOMEBREW_TOP}/glog/0.3.4/include"
+GLOG_LIB_DIR="${HOMEBREW_TOP}/glog/0.3.4/lib"
 
-GFLAGS_INCLUDE_DIR="/opt/twitter/Cellar/gflags/2.1.2/include"
-GFLAGS_LIB_DIR="/opt/twitter/Cellar/gflags/2.1.2/lib"
+GFLAGS_INCLUDE_DIR="${HOMEBREW_TOP}/gflags/2.1.2/include"
+GFLAGS_LIB_DIR="${HOMEBREW_TOP}/gflags/2.1.2/lib"
 
-EIGEN_INCLUDE_DIR="/opt/twitter/Cellar/eigen/3.2.2/include/eigen3"
+EIGEN_INCLUDE_DIR="${HOMEBREW_TOP}/eigen/3.2.2/include/eigen3"
 
 # C++ compiler and flags to generate DLL-linkable objects.
 CXX="c++"
