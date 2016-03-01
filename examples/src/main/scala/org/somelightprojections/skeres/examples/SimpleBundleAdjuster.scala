@@ -1,8 +1,8 @@
 package org.somelightprojections.skeres.examples
 
 /**
-  * A port to scale of the simple_bundle_adjuster.cc example from the ceres-solver
-  * source distribution
+  * A port to Scala of the simple_bundle_adjuster.cc example from the ceres-solver
+  * source distribution.
   */
 
 import com.google.ceres._
