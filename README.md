@@ -8,7 +8,7 @@ On MacOSX:
  * Download and build ceres-solver from its sources at ceres-solver.org, plus its dependencies
    as explained in the ceres user guide. 
  * **NOTE CAREFULLY:** ceres must be built as a DLL, and so must be its dependencies. 
- * Edit file configuraton.sh to reflect your environment.
+ * Edit file configuration.sh to reflect your environment.
  * Run *build.sh*, it will compile and link the wrappers, then plop you in the *sbt* console.
  * When done or in trouble, run *clean.sh* to reset the distribution to its original state.
 
