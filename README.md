@@ -22,4 +22,4 @@ On MacOSX:
     
     \> run
  
-This is a work in progress. Development notes are posted at: http://somelightprojections.blogspot.com/
+This is a work in progress. Development notes are posted at: http://blog.somelightprojections.org/
