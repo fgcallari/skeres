@@ -126,7 +126,9 @@ object SnavelyReprojectionError {
 object SimpleBundleAdjuster {
   def main(args: Array[String]): Unit = {
     ceres.initGoogleLogging("SimpleBundleAdjuster")
-
+    if (args.isEmpty) {
+      println("Usage: SimpleBundleAdjuster <data_file.txt>")
+    }
     val balProblem = BalProblem.fromFile(args(0))
     val observations = balProblem.observations
     val problem = new Problem
