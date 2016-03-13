@@ -3,6 +3,8 @@
 A port to the JVM of the Ceres Solver Library. Main target language is Scala,
 though it should work with minor modifications in Java.
 
+Development notes are posted at: http://blog.somelightprojections.org/
+
 ## Build
 On MacOSX (should work on other UNIX-like systems):
 
@@ -33,7 +35,6 @@ other OS'.
     
     \> run
  
-This is a work in progress. Development notes are posted at: http://blog.somelightprojections.org/
 
 ## Usage in your applications.
 
