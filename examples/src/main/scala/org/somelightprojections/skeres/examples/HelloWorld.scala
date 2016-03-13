@@ -20,11 +20,7 @@ object HelloWorld {
     val x = new DoubleArray(1)
     x.set(0, initialX)
 
-    val problemOptions = new Problem.Options
-    problemOptions.setCostFunctionOwnership(Ownership.DO_NOT_TAKE_OWNERSHIP)
-    problemOptions.setLossFunctionOwnership(Ownership.DO_NOT_TAKE_OWNERSHIP)
-
-    val problem = new Problem(problemOptions)
+    val problem = new Problem
 
     val cost = HelloCostFunctor.toAutodiffCostFunction
     val loss = PredefinedLossFunctions.trivialLoss

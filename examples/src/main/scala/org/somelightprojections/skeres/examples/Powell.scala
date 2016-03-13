@@ -67,12 +67,7 @@ object Powell {
     x4.set(0, initialX(3))
 
     val loss = PredefinedLossFunctions.trivialLoss
-
-    val problemOptions = new Problem.Options
-    problemOptions.setCostFunctionOwnership(Ownership.DO_NOT_TAKE_OWNERSHIP)
-    problemOptions.setLossFunctionOwnership(Ownership.DO_NOT_TAKE_OWNERSHIP)
-
-    val problem = new Problem(problemOptions)
+    val problem = new Problem
 
     problem.addResidualBlock(F1.toAutodiffCostFunction, loss, x1.toPointer, x2.toPointer)
     problem.addResidualBlock(F2.toAutodiffCostFunction, loss, x3.toPointer, x4.toPointer)

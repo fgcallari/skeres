@@ -129,14 +129,11 @@ object SimpleBundleAdjuster {
 
     val balProblem = BalProblem.fromFile(args(0))
     val observations = balProblem.observations
+    val problem = new Problem
+    val lossFunction = PredefinedLossFunctions.trivialLoss()
+
     // Create residuals for each observation in the bundle adjustment problem. The
     // parameters for cameras and points are added automatically.
-    val problemOptions = new Problem.Options
-    problemOptions.setCostFunctionOwnership(Ownership.DO_NOT_TAKE_OWNERSHIP)
-    problemOptions.setLossFunctionOwnership(Ownership.DO_NOT_TAKE_OWNERSHIP)
-
-    val problem = new Problem(problemOptions)
-    val lossFunction = PredefinedLossFunctions.trivialLoss()
     for (i <- 0 until balProblem.numObservations) {
       val obsCost: CostFunction =
         SnavelyReprojectionError(observations(2 * i + 0), observations(2 * i + 1))

@@ -105,12 +105,8 @@ object RobustCurveFitting {
     c.set(0, 0.0)
 
     val loss = PredefinedLossFunctions.cauchyLoss(0.5)
+    val problem = new Problem
 
-    val problemOptions = new Problem.Options
-    problemOptions.setCostFunctionOwnership(Ownership.DO_NOT_TAKE_OWNERSHIP)
-    problemOptions.setLossFunctionOwnership(Ownership.DO_NOT_TAKE_OWNERSHIP)
-
-    val problem = new Problem(problemOptions)
     Data.grouped(2).foreach { case Vector(x, y) =>
       problem.addResidualBlock(
         ExponentialResidual(x, y).toAutodiffCostFunction,

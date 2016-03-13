@@ -97,12 +97,9 @@ object PowellAnalytic {
     val x4 = new DoubleArray(1)
     x4.set(0, initialX(3))
 
-    val problemOptions = new Problem.Options
-    problemOptions.setCostFunctionOwnership(Ownership.DO_NOT_TAKE_OWNERSHIP)
-    problemOptions.setLossFunctionOwnership(Ownership.DO_NOT_TAKE_OWNERSHIP)
-
     val loss = PredefinedLossFunctions.trivialLoss
-    val problem = new Problem(problemOptions)
+    val problem = new Problem
+
     problem.addResidualBlock(F1a, loss, x1.toPointer, x2.toPointer)
     problem.addResidualBlock(F2a, loss, x3.toPointer, x4.toPointer)
     problem.addResidualBlock(F3a, loss, x2.toPointer, x3.toPointer)

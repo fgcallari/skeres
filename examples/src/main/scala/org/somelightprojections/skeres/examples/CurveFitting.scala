@@ -107,11 +107,7 @@ object CurveFitting {
 
     val loss = PredefinedLossFunctions.trivialLoss
 
-    val problemOptions = new Problem.Options
-    problemOptions.setCostFunctionOwnership(Ownership.DO_NOT_TAKE_OWNERSHIP)
-    problemOptions.setLossFunctionOwnership(Ownership.DO_NOT_TAKE_OWNERSHIP)
-
-    val problem = new Problem(problemOptions)
+    val problem = new Problem
     Data.grouped(2).foreach { case Vector(x, y) =>
       problem.addResidualBlock(
         ExponentialResidual(x, y).toAutodiffCostFunction,

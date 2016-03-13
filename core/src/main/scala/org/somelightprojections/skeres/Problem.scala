@@ -1,6 +1,6 @@
 package org.somelightprojections.skeres
 
-import com.google.ceres.{DoubleArray, StdVectorDoublePointer, LossFunction, CostFunction, CeresProblem}
+import com.google.ceres._
 import scala.collection.mutable
 
 object Problem {
@@ -8,6 +8,9 @@ object Problem {
 }
 
 final class Problem(opts: Problem.Options) extends CeresProblem(opts) {
+  opts.setCostFunctionOwnership(Ownership.DO_NOT_TAKE_OWNERSHIP)
+  opts.setLossFunctionOwnership(Ownership.DO_NOT_TAKE_OWNERSHIP)
+
   def this() = this(new Problem.Options())
 
   def addResidualBlock(cost: CostFunction, loss: LossFunction, x: DoublePointer*): ResidualBlockId = {
