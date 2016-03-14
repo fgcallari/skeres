@@ -39,7 +39,7 @@ other OS'.
 ## Usage in your applications.
 
 This port follows closely the Ceres C++ API, so familiarize yourself with its
-documentation first. In keeping with the usual Scala styoe, native Ceres 
+documentation first. In keeping with the usual Scala style, native Ceres 
 methods wrapped by SWIG are accessible using lowerCamelCase names. 
 
 Begin by looking at the Scala sources in the "examples" tree. The
