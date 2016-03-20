@@ -10,6 +10,7 @@
 #include <set>
 #include <vector>
 #include <memory>
+#include <limits>
 #include <cstddef>
 #include <cstdlib>
 
@@ -39,6 +40,7 @@ using std::shared_ptr;
 //#include "ceres/gradient_problem_solver.h"
 
 #include "ceres/sized_cost_function.h"
+#include "ceres/numeric_diff_options.h"
 #include "ceres/version.h"
 %}
 
@@ -143,6 +145,7 @@ void initGoogleLogging(const char* name) {
 %include "ceres/internal/scoped_ptr.h"
 %include "ceres/iteration_callback.h"
 %include "ceres/loss_function.h"
+%include "ceres/numeric_diff_options.h"
 %include "ceres/ordered_groups.h"
 %include "ceres/problem.h"
 %include "ceres/solver.h"
@@ -202,7 +205,6 @@ struct PredefinedLocalParameterizations {
   }
 };
 %}
-
 
 // Loads the swig-wrapped C++ DLL.
 %pragma(java) jniclasscode=%{

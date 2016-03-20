@@ -47,7 +47,7 @@ case class RichDoubleArray(a: DoubleArray) {
   /**
     * Slice of a native array from a starting offset to the end.
     * @param start offset from the begining of the current array.
-    * @return DoublePoiinter pointing to the beginning of the slice.
+    * @return DoublePointer pointing to the beginning of the slice.
     */
   def slice(start: Int): DoublePointer = DoubleArraySlice.get(a.cast, start)
 

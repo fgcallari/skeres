@@ -7,7 +7,7 @@ import com.google.ceres.{StdVectorDoublePointer, DoubleArray, DoubleMatrix}
 // This is intended for manipulation in Scala of memory blocks passed by
 // the native code. Do not use in the wild for general matrix operations.
 case class RichDoubleMatrix(data: DoublePointerPointer) {
-  def isNull: Boolean = DoubleMatrix.isNull(data)
+  @inline def isNull: Boolean = DoubleMatrix.isNull(data)
 
   def hasRow(i: Int): Boolean = !getRow(i).isNull
 
@@ -19,7 +19,10 @@ case class RichDoubleMatrix(data: DoublePointerPointer) {
 
   def set(i: Int, j: Int, x: Double): Unit = getRow(i).setitem(j, x)
 
-  def copyRowFrom(i: Int, a: Array[Double]): Unit = getRow(i).copyFrom(a)
+  def copyRowFrom(i: Int, a: Array[Double]): Unit = copyRowFrom(i, a, 0, a.length)
+
+  def copyRowFrom(i: Int, a: Array[Double], begin: Int, end: Int): Unit =
+    getRow(i).copyFrom(a.slice(begin, end))
 }
 
 object RichDoubleMatrix {

@@ -2,6 +2,7 @@ package org.somelightprojections.skeres
 
 import org.scalatest._
 import org.scalatest.matchers.{MatchResult, Matcher}
+import org.somelightprojections.skeres
 import scala.util.Random
 import spire.implicits._
 import spire.math._
@@ -13,7 +14,7 @@ import spire.math._
 class RotationSpec extends WordSpec with MustMatchers {
   val kPi: Double = math.Pi
   val kHalfSqrt2: Double = 0.5 * sqrt(2)
-  val kEpsilon: Double = 2.2204460492503131e-016
+  val kEpsilon: Double = skeres.EpsilonDouble
   val kNumTrials: Int = 10000
 
   // A tolerance value for floating-point comparisons.

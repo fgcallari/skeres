@@ -3,7 +3,7 @@ package org.somelightprojections
 import com.google.ceres._
 import scala.language.implicitConversions
 import spire.algebra.Order
-import spire.math.Jet
+import spire.math._
 import spire.implicits._
 
 package object skeres {
@@ -11,6 +11,8 @@ package object skeres {
   type DoublePointerPointer = SWIGTYPE_p_p_double
   type DoublePointer = SWIGTYPE_p_double
   type ResidualBlockId = SWIGTYPE_p_ceres__internal__ResidualBlock
+
+  val EpsilonDouble: Double = ulp(1.0D)
 
   // Implicit conversions between pointer objects and
   // arrays or matrices.
