@@ -88,7 +88,7 @@ object RobustCurveFitting {
     4.950000e+00, 4.669206e+00
   )
 
-  case class ExponentialResidual(x: Double, y: Double) extends CostFunctor(1, 1, 1) {
+  case class ExponentialResidual(x: Double, y: Double) extends AutoDiffCostFunctor(1, 1, 1) {
     override def apply[@sp(Double) T: Field: Trig: NRoot: Order: ClassTag](p: Array[T]*): Array[T] = {
       val m = p(0)
       val c = p(1)
@@ -109,7 +109,7 @@ object RobustCurveFitting {
 
     Data.grouped(2).foreach { case Vector(x, y) =>
       problem.addResidualBlock(
-        ExponentialResidual(x, y).toAutodiffCostFunction,
+        ExponentialResidual(x, y).toAutoDiffCostFunction,
         loss,
         m.toPointer,
         c.toPointer)

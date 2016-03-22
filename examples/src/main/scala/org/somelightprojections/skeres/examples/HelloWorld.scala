@@ -8,7 +8,7 @@ import spire.algebra._
 import spire.implicits._
 
 object HelloWorld {
-  object HelloCostFunctor extends CostFunctor(1, 1) {
+  object HelloCostFunctor extends AutoDiffCostFunctor(1, 1) {
     override def apply[@sp(Double) T: Field: Trig: NRoot: Order: ClassTag](x: Array[T]*): Array[T] =
       Array(10.0 - x(0)(0))
   }
@@ -22,7 +22,7 @@ object HelloWorld {
 
     val problem = new Problem
 
-    val cost = HelloCostFunctor.toAutodiffCostFunction
+    val cost = HelloCostFunctor.toAutoDiffCostFunction
     val loss = PredefinedLossFunctions.trivialLoss
     problem.addResidualBlock(cost, loss, x.toPointer)
 

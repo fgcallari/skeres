@@ -69,3 +69,7 @@ case class RichDoubleArray(a: DoubleArray) {
   }
 }
 
+object RichDoubleArray {
+  def ofSize(n: Int): DoublePointer = RichDoubleArray(new DoubleArray(n)).toPointer
+  def fromArray(a: Array[Double]): DoublePointer = ofSize(a.length).copyFrom(a).toPointer
+}

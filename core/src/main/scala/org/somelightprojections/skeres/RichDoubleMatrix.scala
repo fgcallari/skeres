@@ -29,6 +29,12 @@ object RichDoubleMatrix {
   def fromStdVector(vec: StdVectorDoublePointer): DoublePointerPointer =
     DoubleMatrix.toPointerPointer(vec)
 
+  def fromArrays(a: Array[Double]*): DoublePointerPointer = {
+    val v = new StdVectorDoublePointer()
+    a.foreach(ai => v.add(new DoubleArray(ai.length).copyFrom(ai).toPointer))
+    fromStdVector(v)
+  }
+
   lazy val empty = ofSize(0, 0)
 
   def ofSize(numRows: Int, numColumns: Int): DoublePointerPointer = {

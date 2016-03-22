@@ -11,7 +11,7 @@ import spire.math._
 object Powell {
 
   // f1 = x1 + 10 * x2;
-  object F1 extends CostFunctor(1, 1, 1) {
+  object F1 extends AutoDiffCostFunctor(1, 1, 1) {
     override def apply[@sp(Double) T: Field: Trig: NRoot: Order: ClassTag](x: Array[T]*): Array[T] = {
       val x1 = x(0)
       val x2 = x(1)
@@ -21,7 +21,7 @@ object Powell {
   }
 
   // f2 = sqrt(5) (x3 - x4)
-  object F2 extends CostFunctor(1, 1, 1) {
+  object F2 extends AutoDiffCostFunctor(1, 1, 1) {
     override def apply[@sp(Double) T: Field: Trig: NRoot: Order: ClassTag](x: Array[T]*): Array[T] = {
       val x3 = x(0)
       val x4 = x(1)
@@ -31,7 +31,7 @@ object Powell {
   }
 
   // f3 = (x2 - 2 x3)^2
-  object F3 extends CostFunctor(1, 1, 1) {
+  object F3 extends AutoDiffCostFunctor(1, 1, 1) {
     override def apply[@sp(Double) T: Field: Trig: NRoot: Order: ClassTag](x: Array[T]*): Array[T] = {
       val x2 = x(0)
       val x3 = x(1)
@@ -42,7 +42,7 @@ object Powell {
   }
 
   // f4 = sqrt(10) (x1 - x4)^2
-  object F4 extends CostFunctor(1, 1, 1) {
+  object F4 extends AutoDiffCostFunctor(1, 1, 1) {
     override def apply[@sp(Double) T: Field: Trig: NRoot: Order: ClassTag](x: Array[T]*): Array[T] = {
       val x1 = x(0)
       val x4 = x(1)
@@ -69,10 +69,10 @@ object Powell {
     val loss = PredefinedLossFunctions.trivialLoss
     val problem = new Problem
 
-    problem.addResidualBlock(F1.toAutodiffCostFunction, loss, x1.toPointer, x2.toPointer)
-    problem.addResidualBlock(F2.toAutodiffCostFunction, loss, x3.toPointer, x4.toPointer)
-    problem.addResidualBlock(F3.toAutodiffCostFunction, loss, x2.toPointer, x3.toPointer)
-    problem.addResidualBlock(F4.toAutodiffCostFunction, loss, x1.toPointer, x4.toPointer)
+    problem.addResidualBlock(F1.toAutoDiffCostFunction, loss, x1.toPointer, x2.toPointer)
+    problem.addResidualBlock(F2.toAutoDiffCostFunction, loss, x3.toPointer, x4.toPointer)
+    problem.addResidualBlock(F3.toAutoDiffCostFunction, loss, x2.toPointer, x3.toPointer)
+    problem.addResidualBlock(F4.toAutoDiffCostFunction, loss, x1.toPointer, x4.toPointer)
 
     val options = new Solver.Options
     options.setMinimizerType(MinimizerType.TRUST_REGION)

@@ -11,12 +11,12 @@ import spire.math.{Jet, JetDim}
 
 
 object CostFunctionToFunctor {
-  def apply(cost: CostFunction)(implicit d: JetDim): CostFunctor = CostFunctorAdapter(cost)
+  def apply(cost: CostFunction)(implicit d: JetDim): AutoDiffCostFunctor = CostFunctorAdapter(cost)
 }
 
 // This is only to preserve the ceres-solver class names - in Scala everything is dynamic.
 object DynamicCostFunctionToFunctor {
-  def apply(cost: CostFunction)(implicit d: JetDim): CostFunctor = CostFunctorAdapter(cost)
+  def apply(cost: CostFunction)(implicit d: JetDim): AutoDiffCostFunctor = CostFunctorAdapter(cost)
 }
 
 private[skeres] object CostFunctorAdapter {
@@ -44,7 +44,7 @@ private[skeres] object CostFunctorAdapter {
 }
 
 private[skeres] case class CostFunctorAdapter(cost: CostFunction)(implicit d: JetDim)
-    extends CostFunctor(cost.numResiduals(), CostFunctorAdapter.N(cost): _*) {
+    extends AutoDiffCostFunctor(cost.numResiduals(), CostFunctorAdapter.N(cost): _*) {
   import CostFunctorAdapter._
   private val numParameters = N.sum
   private val numParameterBlocks = N.length

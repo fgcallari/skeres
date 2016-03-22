@@ -17,6 +17,7 @@ swig -O -c++ -java \
 -oh "${GEN_CPP_DIR}/ceres_wrap.h" \
 -I"${CERES_BIN}/config" \
 -I"${CERES_SRC}/include" \
+-I"${CERES_SRC}/internal" \
 -I"${GLOG_INCLUDE_DIR}" \
 -I"${GFLAGS_INCLUDE_DIR}" \
 -D"CERES_EXPORT" \
@@ -28,6 +29,7 @@ $CXX $CXXFLAGS \
 -I "${GEN_CPP_DIR}" \
 -I"${JAVA_HOME}/include" -I"${JAVA_HOME}/include/darwin" \
 -I"${CERES_SRC}/include" \
+-I"${CERES_SRC}/internal" \
 -I"${GLOG_INCLUDE_DIR}" \
 -I"${GFLAGS_INCLUDE_DIR}" \
 -I"${EIGEN_INCLUDE_DIR}" \

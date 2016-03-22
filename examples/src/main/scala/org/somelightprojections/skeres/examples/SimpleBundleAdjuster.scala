@@ -76,7 +76,7 @@ object BalProblem {
   }
 }
 
-class SnavelyReprojectionError(observedX: Double, observedY: Double) extends CostFunctor(2, 9, 3) {
+class SnavelyReprojectionError(observedX: Double, observedY: Double) extends AutoDiffCostFunctor(2, 9, 3) {
 
   override def apply[@sp(Double) T: Field : Trig : NRoot : Order : ClassTag](
     params: Array[T]*
@@ -120,7 +120,7 @@ class SnavelyReprojectionError(observedX: Double, observedY: Double) extends Cos
 
 object SnavelyReprojectionError {
   def apply(observedX: Double, observedY: Double): CostFunction =
-    new SnavelyReprojectionError(observedX, observedY).toAutodiffCostFunction
+    new SnavelyReprojectionError(observedX, observedY).toAutoDiffCostFunction
 }
 
 object SimpleBundleAdjuster {

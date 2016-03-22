@@ -11,7 +11,7 @@ class AutodiffCostFuntionSpec extends WordSpec with MustMatchers {
 
   "AutodiffCostFunction" should {
     "evaluate cost and jacobians on a bilinear scalar cost function" in {
-      case class BinaryScalarCost(a: Double) extends CostFunctor(1, 2, 2) {
+      case class BinaryScalarCost(a: Double) extends AutoDiffCostFunctor(1, 2, 2) {
         override def apply[@sp(Double) T: Field: Trig: NRoot: Order: ClassTag](
           p: Array[T]*
         ): Array[T] = {
@@ -34,7 +34,7 @@ class AutodiffCostFuntionSpec extends WordSpec with MustMatchers {
       val nullJacobians: DoublePointerPointer = null
       val residuals: DoublePointer = new DoubleArray(1).toPointer
 
-      val costFunction = BinaryScalarCost(1.0).toAutodiffCostFunction
+      val costFunction = BinaryScalarCost(1.0).toAutoDiffCostFunction
 
       costFunction.evaluate(parameters, residuals, nullJacobians) must be(true)
       residuals.get(0) must be(10.0)
@@ -52,7 +52,7 @@ class AutodiffCostFuntionSpec extends WordSpec with MustMatchers {
     }
   }
   "evaluate cost and jacobians on a bilinear vector cost function" in {
-    case class BinaryVector3Cost(a: Double) extends CostFunctor(3, 2, 2) {
+    case class BinaryVector3Cost(a: Double) extends AutoDiffCostFunctor(3, 2, 2) {
       override def apply[@sp(Double) T: Field: Trig: NRoot: Order: ClassTag](
         p: Array[T]*
       ): Array[T] = {
@@ -77,7 +77,7 @@ class AutodiffCostFuntionSpec extends WordSpec with MustMatchers {
     val nullJacobians: DoublePointerPointer = null
     val residuals: DoublePointer = new DoubleArray(3).toPointer
 
-    val costFunction = BinaryVector3Cost(1.0).toAutodiffCostFunction
+    val costFunction = BinaryVector3Cost(1.0).toAutoDiffCostFunction
 
     costFunction.evaluate(parameters, residuals, nullJacobians) must be(true)
     residuals.get(0) must be(10.0)
@@ -108,7 +108,7 @@ class AutodiffCostFuntionSpec extends WordSpec with MustMatchers {
     jacobians.get(1, 5) must be(3)
   }
   "evaluate cost and jacobians on a cost function with many parameter blocks" in {
-    case class TenParameterCost() extends CostFunctor(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1) {
+    case class TenParameterCost() extends AutoDiffCostFunctor(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1) {
       override def apply[@sp(Double) T: Field : Trig : NRoot : Order : ClassTag](
         p: Array[T]*
       ): Array[T] = {
@@ -124,7 +124,7 @@ class AutodiffCostFuntionSpec extends WordSpec with MustMatchers {
     val nullJacobians = null
     val residuals: DoublePointer = new DoubleArray(1).toPointer
 
-    val costFunction = TenParameterCost().toAutodiffCostFunction
+    val costFunction = TenParameterCost().toAutoDiffCostFunction
 
     costFunction.evaluate(parameters, residuals, nullJacobians) must be(true)
     residuals.get(0) must be(45.0)
