@@ -5,6 +5,34 @@ import org.scalatest.{OneInstancePerTest, MustMatchers, WordSpec}
 
 class RichDoubleMatrixSpec extends WordSpec with MustMatchers {
   "RichDoubleMatrix" should {
+    "construct from arrays of Double" in {
+      val a0 = Array.ofDim[Double](3)
+      for (i <- 0 until 3) a0(i) = 3 * i
+      val a1 = Array.ofDim[Double](6)
+      for (i <- 0 until 6) a1(i) = 6 * i
+
+      val mat = RichDoubleMatrix.fromArrays(a0, a1)
+
+      mat.hasRow(0) must be(true)
+      mat.getRow(0).isNull must be(false)
+      val r0 = mat.getRow(0)
+      for (i <- 0 until 3) {
+        r0.get(i) must be(3 * i)
+        mat.set(0, i, 10 * i)
+      }
+      mat.getRow(1).isNull must be(false)
+      val r1 = mat.getRow(1)
+      for (i <- 0 until 6) {
+        r1.get(i) must be(6 * i)
+      }
+      for (i <- 0 until 3) {
+        mat.get(0, i) must be(10 * i)
+      }
+      mat.getRow(1).copyFrom((0 until 6).map(_ * 20.0).toArray)
+      for (i <- 0 until 6) {
+        mat.get(1, i) must be(20 * i)
+      }
+    }
     "construct from vector of pointers" in {
       val a0 = new DoubleArray(3)
       for (i <- 0 until 3) a0.set(i, 3 * i)

@@ -91,11 +91,11 @@ namespace std {
 %rename("%(lowercamelcase)s", %$isfunction) "";
 %rename("%(lowercamelcase)s", %$isvariable) "";
 
-// DoubleArray are arrays of double's, pointed by DoublePointer's
+// DoubleArray are arrays of double's.
 %include "carrays.i"
 %array_class(double, DoubleArray);
 
-// DoubleArraySlice's are slices of DoubleArray's
+// DoubleArraySlice's are slices of DoubleArray's always starting at the first element.
 %inline %{
 struct DoubleArraySlice {
   static double* get(double* buffer, int start) { return &(buffer[start]); }
@@ -106,9 +106,9 @@ private:
 };
 %}
 
-// Convenient access to matrices represented as double** (e.g.
+// Convenient access to collections of native blocks of double's (e.g.
 // the Jacobian passed to the cost function).
-// See implicits in skeres package.scala to see how these are
+// See implicits in skeres package.scala and file RichDoubleMatrix.scla to see how these are
 // used in practice.
 %inline %{
 struct DoubleMatrix {

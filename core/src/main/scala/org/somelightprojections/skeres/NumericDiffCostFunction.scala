@@ -70,6 +70,7 @@ case class NumericDiffCostFunction(
   options: NumericDiffOptions,
   costFunctor: NumericDiffCostFunctor
 ) extends SizedCostFunction(costFunctor.kNumResiduals, costFunctor.N: _*) {
+  require(method != NumericDiffMethodType.RIDDERS, "RIDDERS method not yet implemented")
 
   override def evaluate(
     parameters: DoublePointerPointer,
@@ -99,65 +100,65 @@ case class NumericDiffCostFunction(
     }
 
     val yC: Array[Double] = costFunctor(x: _*)
-
     if (yC.isEmpty) {
-      false
-    } else {
-      residuals.copyFrom(yC)
-      if (jacobians.isNull) {
-        true
-      } else {
-        val stepScale =
-          if (method == RIDDERS) options.getRiddersRelativeInitialStepSize
-          else options.getRelativeStepSize
+      return false
+    }
 
-        cforRange(0 until numParameterBlocks) { i =>
-          val ni = costFunctor.N(i)
-          val Ji: Array[Double] = Array.ofDim[Double](kNumResiduals * ni)
-          val xi: Array[Double] = x(i)
-          val steps = Array.ofDim[Double](ni)
-          cforRange(0 until ni) { j =>
-            steps(j) = max(abs(xi(j)) * stepScale, minStepSize)
-          }
-          cforRange(0 until ni) { col =>
-            val xic = xi(col)
-            val sc = steps(col)
-            xi(col) = xic + sc
-            val yF = costFunctor(x: _*)
-            if (yF.isEmpty) {
-              xi(col) = xic
+    residuals.copyFrom(yC)
+
+    if (jacobians.isNull) {
+      return true
+    }
+
+    val stepScale =
+      if (method == RIDDERS) options.getRiddersRelativeInitialStepSize
+      else options.getRelativeStepSize
+
+    cforRange(0 until numParameterBlocks) { i =>
+      val ni = costFunctor.N(i)
+      // Jacobian for the i-th parameter block, stored row-major
+      val Ji: Array[Double] = Array.ofDim[Double](kNumResiduals * ni)
+      val xi: Array[Double] = x(i)
+      val steps = Array.ofDim[Double](ni)
+      cforRange(0 until ni) { j =>
+        steps(j) = max(abs(xi(j)) * stepScale, minStepSize)
+      }
+      cforRange(0 until ni) { col =>
+        val xic = xi(col)
+        val sc = steps(col)
+        xi(col) = xic + sc
+        val yF = costFunctor(x: _*)
+        xi(col) = xic
+        if (yF.isEmpty) {
+          return false
+        }
+        method match {
+          case FORWARD =>
+            val invSc = 1.0 / sc
+            var offset = col
+            cforRange(0 until kNumResiduals) { row =>
+              Ji(offset) = (yF(row) - yC(row)) * invSc
+              offset += ni
+            }
+          case CENTRAL =>
+            val invSc = 0.5 / sc
+            xi(col) = xic - sc
+            val yB = costFunctor(x: _*)
+            xi(col) = xic
+            if (yB.isEmpty) {
               return false
             }
-            method match {
-              case FORWARD =>
-                val invSc = 1.0 / sc
-                var offset = col
-                cforRange(0 until kNumResiduals) { row =>
-                  Ji(offset) = (yF(row) - yC(row)) * invSc
-                  offset += ni
-                }
-              case CENTRAL =>
-                val invSc = 0.5 / sc
-                xi(col) = xic - sc
-                val yB = costFunctor(x: _*)
-                if (yB.isEmpty) {
-                  xi(col) = xic
-                  return false
-                }
-                var offset = col
-                cforRange(0 until kNumResiduals) { row =>
-                  Ji(offset) = (yF(row) - yB(row)) * invSc
-                  offset += ni
-                }
-              case _ =>
-                throw new IllegalArgumentException("RIDDERS not implemented yet")
+            var offset = col
+            cforRange(0 until kNumResiduals) { row =>
+              Ji(offset) = (yF(row) - yB(row)) * invSc
+              offset += ni
             }
-            xi(col) = xic
-            jacobians.copyRowFrom(i, Ji)
-          }
+          case _ =>
+            throw new IllegalArgumentException("RIDDERS not implemented yet")
         }
-        true
+        jacobians.copyRowFrom(i, Ji)
       }
     }
+    true
   }
 }
