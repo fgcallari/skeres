@@ -84,7 +84,7 @@ object RichDoubleMatrix {
     DoubleMatrix.toPointerPointer(vec)
 
   /** Allocates a.length native memory blocks, and initializes them with the content of the
-    * given JVM arrays.
+    * given Scala arrays.
     * Note that, as the memory is held natively, it is OK for the passed JVM arrays to go
     * out of scope after this method returns.
     */

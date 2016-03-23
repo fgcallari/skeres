@@ -18,12 +18,12 @@ object NumericDiffCostFunctionSpec {
 
   trait TestFunctor {
     def nearlyCorrect(method: NumericDiffMethodType): BeMatcher[CostFunction]
-
-    protected def failOrNone(e: => Boolean, failMsg: String, successMsg: String): Option[MatchResult] =
-      if (e) None else Some(MatchResult(e, failMsg, successMsg))
   }
 
   object EasyFunctor extends TestFunctor {
+    private def failOrNone(e: => Boolean, fail: String, success: String): Option[MatchResult] =
+      if (e) None else Some(MatchResult(e, fail, success))
+
     override def nearlyCorrect(method: NumericDiffMethodType) = new BeMatcher[CostFunction] {
       import NumericDiffMethodType._
 
@@ -95,14 +95,13 @@ object NumericDiffCostFunctionSpec {
   }
 
   object TranscendentalFunctor extends TestFunctor {
-    private case class Blocks(x1: Array[Double], x2: Array[Double])
     private val kTests = Array(
-      Blocks(Array(1.0, 2.0, 3.0, 4.0, 5.0), Array(9.0, 9.0, 5.0, 5.0, 1.0)), // No zeros.
-      Blocks(Array(0.0, 2.0, 3.0, 0.0, 5.0), Array(9.0, 9.0, 5.0, 5.0, 1.0)), // Some zeros x1.
-      Blocks(Array(1.0, 2.0, 3.0, 1.0, 5.0), Array(0.0, 9.0, 0.0, 5.0, 0.0)), // Some zeros x2.
-      Blocks(Array(0.0, 0.0, 0.0, 0.0, 0.0), Array(9.0, 9.0, 5.0, 5.0, 1.0)), // All zeros x1.
-      Blocks(Array(1.0, 2.0, 3.0, 4.0, 5.0), Array(0.0, 0.0, 0.0, 0.0, 0.0)), // All zeros x2.
-      Blocks(Array(0.0, 0.0, 0.0, 0.0, 0.0), Array(0.0, 0.0, 0.0, 0.0, 0.0))  // All zeros.
+      (Array(1.0, 2.0, 3.0, 4.0, 5.0), Array(9.0, 9.0, 5.0, 5.0, 1.0)), // No zeros.
+      (Array(0.0, 2.0, 3.0, 0.0, 5.0), Array(9.0, 9.0, 5.0, 5.0, 1.0)), // Some zeros x1.
+      (Array(1.0, 2.0, 3.0, 1.0, 5.0), Array(0.0, 9.0, 0.0, 5.0, 0.0)), // Some zeros x2.
+      (Array(0.0, 0.0, 0.0, 0.0, 0.0), Array(9.0, 9.0, 5.0, 5.0, 1.0)), // All zeros x1.
+      (Array(1.0, 2.0, 3.0, 4.0, 5.0), Array(0.0, 0.0, 0.0, 0.0, 0.0)), // All zeros x2.
+      (Array(0.0, 0.0, 0.0, 0.0, 0.0), Array(0.0, 0.0, 0.0, 0.0, 0.0))  // All zeros.
     )
 
     override def nearlyCorrect(method: NumericDiffMethodType) = new BeMatcher[CostFunction] {
@@ -115,21 +114,21 @@ object NumericDiffCostFunctionSpec {
         case CENTRAL | _ => 2.0e-7
       }
 
-      private def run(costFunction: CostFunction, i: Int): MatchResult = {
-        val blocks = kTests(i)
-        val x1 = blocks.x1
-        val x2 = blocks.x2
+      private def runOneTest(costFunction: CostFunction, testIndex: Int): MatchResult = {
+        val testData = kTests(testIndex)
+        val x1 = testData._1
+        val x2 = testData._2
         val parameters = RichDoubleMatrix.fromArrays(x1, x2)
         val jacobians = RichDoubleMatrix.ofSize(2, 10)
         val residuals = RichDoubleArray.ofSize(2)
         if (!costFunction.evaluate(parameters, residuals.toPointer, jacobians)) {
           MatchResult(
-            false, s"cost function eval failed on example $i", "cost function eval succeeded"
+            false, s"cost function eval failed on example $testIndex", "cost function eval succeeded"
           )
         } else {
-          val x1x2 = x1.zip(x2).map{ case (a, b) => a * b }.sum
           val dydx1 = jacobians.getRow(0).toArray(10)
           val dydx2 = jacobians.getRow(1).toArray(10)
+          val x1x2 = x1.zip(x2).map{ case (a, b) => a * b }.sum
           MatchResult(
             (0 until 5).forall { j =>
               expectClose( x2(j) * cos(x1x2), dydx1(5 * 0 + j), tolerance) &&
@@ -137,7 +136,7 @@ object NumericDiffCostFunctionSpec {
               expectClose(-x2(j) * exp(-x1x2 / 10.0) / 10.0, dydx1(5 * 1 + j), tolerance) &&
               expectClose(-x1(j) * exp(-x1x2 / 10.0) / 10.0, dydx2(5 * 1 + j), tolerance)
             },
-            s"inconsistent jacobians on example $i", "consistent jacobians"
+            s"inconsistent jacobians on example $testIndex", "consistent jacobians"
           )
         }
       }
@@ -147,7 +146,7 @@ object NumericDiffCostFunctionSpec {
           true, "failure on transcendental functor", "pass on transcendental functor "
         )
         kTests.indices.foldLeft(success) { case (m, i) =>
-          if (m.matches) run(left, i) else m
+          if (m.matches) runOneTest(left, i) else m
         }
       }
     }
