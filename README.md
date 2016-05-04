@@ -49,7 +49,7 @@ Data used for the evaluation of the residual terms should be stored entirely in
 JVM-side data structures as appropriate.
 
 Parameter blocks are instead stored on the native code side, and accessed
-through JVM objects wrapping their containers or pointers tosaid containers. 
+through JVM objects wrapping their containers or pointers to said containers. 
 Utility classes are provided to simplify the management of this memory. See
 also [this blog post](http://blog.somelightprojections.org/2016/01/on-calling-ceres-from-scala-30-who-owns.html) 
 for a discussion of design choices concerning memory management.
