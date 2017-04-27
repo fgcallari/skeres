@@ -150,8 +150,11 @@ void initGoogleLogging(const char* name) {
 %include "ceres/problem.h"
 %include "ceres/solver.h"
 %include "ceres/version.h"
-
 //%include "ceres/gradient_problem_solver.h"
+
+%inline {
+using namespace ceres;
+}
 
 // Convenient creation of the ceres-predefined loss functions.
 %newobject PredefinedLossFunctions::trivialLoss;
@@ -210,6 +213,7 @@ struct PredefinedLocalParameterizations {
 %pragma(java) jniclasscode=%{
   static {
     try {
+      System.loadLibrary("ceres");
       System.loadLibrary("skeres");
     } catch (UnsatisfiedLinkError e) {
       System.err.println("Native code library failed to load. \n" + e);

@@ -5,22 +5,22 @@
 #
 
 # Top-level ceres-solver source directory.
-CERES_SRC="${HOME}/src/ceres-solver"
+CERES_SRC="${HOME}/src/hacks/ceres-solver"
 
 # Top-level build directory for ceres-solver.
-CERES_BIN="${HOME}/src/ceres-bin"
+CERES_BIN="${HOME}/src/hacks/ceres-bin"
 
 # Root directory for the installed Homebrew packages.
-HOMEBREW_TOP="/opt/twitter/Cellar"
+HOMEBREW_TOP="/usr/local/Cellar"
 
 # Installation directories for some ceres-solver dependencies (headers,  DLL's).
-GLOG_INCLUDE_DIR="${HOMEBREW_TOP}/glog/0.3.4/include"
-GLOG_LIB_DIR="${HOMEBREW_TOP}/glog/0.3.4/lib"
+GLOG_INCLUDE_DIR="${HOMEBREW_TOP}/glog/0.3.4_1/include"
+GLOG_LIB_DIR="${HOMEBREW_TOP}/glog/0.3.4_1/lib"
 
-GFLAGS_INCLUDE_DIR="${HOMEBREW_TOP}/gflags/2.1.2/include"
-GFLAGS_LIB_DIR="${HOMEBREW_TOP}/gflags/2.1.2/lib"
+GFLAGS_INCLUDE_DIR="${HOMEBREW_TOP}/gflags/2.2.0/include"
+GFLAGS_LIB_DIR="${HOMEBREW_TOP}/gflags/2.2.0/lib"
 
-EIGEN_INCLUDE_DIR="${HOMEBREW_TOP}/eigen/3.2.2/include/eigen3"
+EIGEN_INCLUDE_DIR="${HOMEBREW_TOP}/eigen/3.3.3/include/eigen3"
 
 # C++ compiler and flags to generate DLL-linkable objects.
 CXX="c++"
